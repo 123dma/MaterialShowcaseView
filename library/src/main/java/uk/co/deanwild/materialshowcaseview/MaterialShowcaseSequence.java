@@ -92,6 +92,7 @@ public class MaterialShowcaseSequence implements IDetachedListener {
          */
         if (mSingleUse) {
             if (hasFired()) {
+                notifyOnSkipped();
                 return;
             }
 
@@ -154,6 +155,23 @@ public class MaterialShowcaseSequence implements IDetachedListener {
         }
     }
 
+    private void notifyOnSkipped() {
+
+            if(mListeners != null){
+                for (IShowcaseListener listener : mListeners) {
+                    listener.onShowcaseSkipped(this);
+                }
+                mListeners.clear();
+                mListeners = null;
+            }
+
+            /**
+            * internal listener used by sequence for storing progress within the sequence
+            */
+            if (mDetachedListener != null) {
+                mDetachedListener.onShowcaseDetached(this, mWasDismissed);
+            }
+        }
 
     @Override
     public void onShowcaseDetached(MaterialShowcaseView showcaseView, boolean wasDismissed, boolean wasSkipped) {
